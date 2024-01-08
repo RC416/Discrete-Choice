@@ -8,15 +8,16 @@ using Distributions, StatsBase, Parameters, ForwardDiff, LinearAlgebra, Plots, D
 # -----------------------------------------------------------------------------
 # 1. Model parameters.
 # -----------------------------------------------------------------------------
-utility_parameters = [-0.05]            # risk aversion parameter
-true_quality = [0.0, 0.0, 0.0]      # true product quality 
-Q₀  = [-1.0, -1.0, -1.0]               # product quality belief prior means normal distributed
-σ²₀ = [0.50, 0.50, 0.50]                # mean parameters for distribution of individual variance beliefs (̂σⱼ₀)
-σ²ₑ = [0.50]                            # variance of experience signals
-σ²ₐ = [0.50]                            # variance of advertising signals
+utility_parameters = [-0.10]            # risk aversion parameter
+true_quality = [0.0, 0.0, 0.0]          # true product quality 
+Q₀  = [-5.0, -5.0, -5.0]                # product quality belief prior means normal distributed
+σ²₀ = [0.10]                            # mean parameters for distribution of individual variance beliefs (̂σⱼ₀)
+σ²ₑ = [1.00]                            # variance of experience signals
+σ²ₐ = [2.00]                            # variance of advertising signals
 
 U(Qᵢₜⱼ, θ) = Qᵢₜⱼ + θ[1]*(Qᵢₜⱼ)^2  # utility function (quadratic)
 EU(Qᵢₜⱼ, σ²ᵢₜⱼ, σ²ₑ, σ²ₐ, θ) = Qᵢₜⱼ + θ[1]*(Qᵢₜⱼ)^2 + θ[1]*(σ²ᵢₜⱼ + σ²ₑ[1])  # expected utility
+#EU(Qᵢₜⱼ, σ²ᵢₜⱼ, σ²ₑ, σ²ₐ, θ) = -exp(-θ[1]*Qᵢₜⱼ) + (θ[1]^2)*(σ²ᵢₜⱼ + σ²ₑ[1]) / 2  # expected utility (exponential)
 
 n_simulations = 50                      # number of draws for simulated likelihood
 
@@ -46,7 +47,7 @@ plot_likelihood_function(Model_Parameters)
 # -----------------------------------------------------------------------------
 # Guess parameter values.
 true_values = Model_Parameters
-free_parameter_indices = [2,3,5,6,7,8,9,10,12]
+free_parameter_indices = [2,3,5,6,7,9,10]
 vector_true_values = struct_to_vector(true_values)[free_parameter_indices]
 
 vector_guess = vector_true_values
@@ -139,7 +140,7 @@ display(DataFrame([parameter_labels vector_guess vector_true_values results],
 using Optim
 
 # Set up parameter values.
-free_parameter_indices = [2,3,5,6,7,8,9,10,12]
+#free_parameter_indices = [2,3,5,6,7]
 true_values = Model_Parameters
 vector_true_values = struct_to_vector(true_values)[free_parameter_indices]
 vector_guess = vector_true_values

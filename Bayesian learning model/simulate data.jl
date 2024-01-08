@@ -4,8 +4,8 @@ Used in main.jl.
 =#
 
 # Model environment.
-n_individuals = 50
-n_periods = 50
+n_individuals = 80
+n_periods = 20
 n_choices = size(Q₀, 1)          # extra choice for the (last) product which has normalized priors
 
 # Individual signal draws for experience and detailing signals used to crate the observables.
@@ -34,7 +34,7 @@ Total_Choice_Count = 1  # start with just a fixed value
 
 # Simulate advertising observations.
 Advertising = Array{Int64, 3}(undef, (n_individuals, n_periods - 1, n_choices))
-Advertising = 1 .* (rand(Uniform(0,1), (n_individuals, n_periods, n_choices)) .> 0.40)
+Advertising = 1 .* (rand(Uniform(0,1), (n_individuals, n_periods, n_choices)) .> 0.20)
 
 # Record detailing interactions in dₐ, Nₐ accordingly.
 dₐ .= (Advertising[:,2:n_periods,:] .> 0)
@@ -54,7 +54,7 @@ for i in 1:n_individuals
             if t == 1 # if this is the first period, get the priors.
                 
                 Qᵢₜⱼ = Q₀[j]
-                σ²ᵢₜⱼ = σ²₀[j]
+                σ²ᵢₜⱼ = σ²₀[1]
             
             else # otherwise, calculate updated beliefs based on experience signals.
 
@@ -73,8 +73,8 @@ for i in 1:n_individuals
                 end
                
                 # Calculate updated beliefs. Equations 17 and 18 in Ching/Erdem/Keane 2013.  
-                σ²ᵢₜⱼ = 1 / ((1 / σ²₀[j]) + (Nₑ[i,t-1,j] / σ²ₑ[1]) + (Nₐ[i,t-1,j] / σ²ₐ[1]))
-                Qᵢₜⱼ = (σ²ᵢₜⱼ / σ²ₑ[1] * ∑ₜQᴱⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²ₐ[1] * ∑ₜAⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²₀[j] * Q₀[j])
+                σ²ᵢₜⱼ = 1 / ((1 / σ²₀[1]) + (Nₑ[i,t-1,j] / σ²ₑ[1]) + (Nₐ[i,t-1,j] / σ²ₐ[1]))
+                Qᵢₜⱼ = (σ²ᵢₜⱼ / σ²ₑ[1] * ∑ₜQᴱⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²ₐ[1] * ∑ₜAⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²₀[1] * Q₀[j])
             end
 
             # Calculate indirect utility.

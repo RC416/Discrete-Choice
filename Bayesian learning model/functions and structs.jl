@@ -15,8 +15,6 @@ using Parameters
     σ²₀::Type_4                                     # prior variances
     σ²ₑ::Type_5                                     # experience signal noise (variance)
     σ²ₐ::Type_6                                     # experience signal noise (variance)
-    #experience_signals::Array{Float64, 3}          # experience noise draws
-    #advertising_signals::Array{Float64, 3}         # advertising noise draws
 end
 
 @with_kw mutable struct Environment_Struct
@@ -79,7 +77,7 @@ function likelihood(Model_Parameters, Data, Environment)
                     if t == 1 # if this is the first period, get the priors.
                         
                         Qᵢₜⱼ = deepcopy(Q₀[j])
-                        σ²ᵢₜⱼ = deepcopy(σ²₀[j])
+                        σ²ᵢₜⱼ = deepcopy(σ²₀[1])
                     
                     else # otherwise, calculate updated beliefs based on experience signals.
 
@@ -98,8 +96,8 @@ function likelihood(Model_Parameters, Data, Environment)
                         end
                         
                         # Calculate updated beliefs. Equations 17 and 18 in Ching/Erdem/Keane 2013.  
-                        σ²ᵢₜⱼ = 1 / ((1 / σ²₀[j]) + (Nₑ[i,t-1,j] / σ²ₑ[1]) + (Nₐ[i,t-1,j] / σ²ₐ[1]))
-                        Qᵢₜⱼ = (σ²ᵢₜⱼ / σ²ₑ[1] * ∑ₜQᴱⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²ₐ[1] * ∑ₜAⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²₀[j] * Q₀[j])
+                        σ²ᵢₜⱼ = 1 / ((1 / σ²₀[1]) + (Nₑ[i,t-1,j] / σ²ₑ[1]) + (Nₐ[i,t-1,j] / σ²ₐ[1]))
+                        Qᵢₜⱼ = (σ²ᵢₜⱼ / σ²ₑ[1] * ∑ₜQᴱⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²ₐ[1] * ∑ₜAⱼₜdⱼₜ) + (σ²ᵢₜⱼ / σ²₀[1] * Q₀[j])
                     end
 
                     # Calculate indirect utility.
